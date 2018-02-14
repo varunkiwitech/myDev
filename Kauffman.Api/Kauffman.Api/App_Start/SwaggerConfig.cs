@@ -2,6 +2,7 @@ using System.Web.Http;
 using WebActivatorEx;
 using Kauffman.Api;
 using Swashbuckle.Application;
+using Kauffman.Api.App_Start;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -33,7 +34,9 @@ namespace Kauffman.Api
                         // additional fields by chaining methods off SingleApiVersion.
                         //
                         c.SingleApiVersion("v1", "Kauffman.Api");
-
+                        c.OperationFilter(() => new AddRequiredHeaderParameter());
+                        c.IncludeXmlComments(string.Format(@"{0}\bin\Kauffman.Api.XML", System.AppDomain.CurrentDomain.BaseDirectory));
+                        c.DescribeAllEnumsAsStrings();
                         // If you want the output Swagger docs to be indented properly, enable the "PrettyPrint" option.
                         //
                         //c.PrettyPrint();
@@ -61,7 +64,7 @@ namespace Kauffman.Api
                         //c.BasicAuth("basic")
                         //    .Description("Basic HTTP Authentication");
                         //
-						// NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
+                        // NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
                         //c.ApiKey("apiKey")
                         //    .Description("API Key Authentication")
                         //    .Name("apiKey")

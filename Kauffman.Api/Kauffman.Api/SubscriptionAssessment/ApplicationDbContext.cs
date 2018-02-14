@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using Kauffman.Api.SubscriptionAssessment.Models;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Kauffman.Api.Models
+namespace Kauffman.Api.SubscriptionAssessment
 {
     public class ApplicationUser : IdentityUser
     {
@@ -38,6 +39,10 @@ namespace Kauffman.Api.Models
             modelBuilder.Entity<IdentityUserClaim>().ToTable("UserClaims");
             modelBuilder.Entity<IdentityRole>().ToTable("Roles");
         }
+
+
+        public System.Data.Entity.DbSet<UserSubscription> UserSubscriptions { get; set; }
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();

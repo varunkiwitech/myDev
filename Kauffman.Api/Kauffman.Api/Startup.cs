@@ -5,13 +5,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Kauffman.Api.DbContext;
 using Kauffman.Api.Models;
+using Kauffman.Api.SubscriptionAssessment;
 //using Kauffman.Data;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 
@@ -26,8 +27,8 @@ namespace Kauffman.Api
             HttpConfiguration config = new HttpConfiguration();
             WebApiConfig.Register(config);
             //app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
-            createRolesandUsers();
-            //AccountManager manager = new AccountManager();
+
+            //createRolesandUsers();
         }
 
         private void createRolesandUsers()
@@ -93,30 +94,85 @@ namespace Kauffman.Api
             {
                 context.Validated();
             }
+
+            #region[CreateProperties]
+            public static AuthenticationProperties CreateProperties(string userName, DateTime subscriptionEndDate, bool HasUserTakenAssesment = false, bool IsUserSubscribed = false)
+            {
+                IDictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "userName", userName },
+                //{ "HasUserTakenAssesment", HasUserTakenAssesment.ToString()},
+                //{ "SubscriptionEndDate", subscriptionEndDate.ToString("yyyyMMdd hh:mm:ss")},
+                //{ "IsUserSubscribed", IsUserSubscribed.ToString()}
+
+                //subscriptionEndDate
+            };
+                return new AuthenticationProperties(data);
+            }
+            #endregion
+
+            #region[TokenEndpoint]
+            public override Task TokenEndpoint(OAuthTokenEndpointContext context)
+            {
+                foreach (KeyValuePair<string, string> property in context.Properties.Dictionary)
+                {
+                    context.AdditionalResponseParameters.Add(property.Key, property.Value);
+                }
+
+                return Task.FromResult<object>(null);
+            }
+            #endregion
+
             public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
             {
                 UserManager<IdentityUser> userManager = context.OwinContext.GetUserManager<UserManager<IdentityUser>>();
                 IdentityUser user;
                 try
                 {
+                    Logger.Logger.Log("Login-GrantResourceOwnerCredentials()", "Login for User : " + context.UserName);
                     user = await userManager.FindAsync(context.UserName, context.Password);
+
                 }
-                catch
+                catch(Exception ex)
                 {
                     // Could not retrieve the user due to error.
+                    Logger.Logger.Log("Login-GrantResourceOwnerCredentials()", "Error: Login for User Failed : " + context.UserName);
+                    Logger.Logger.Log("Login-GrantResourceOwnerCredentials()", "Error Message : " + ex.Message);
                     context.SetError("server_error");
                     context.Rejected();
                     return;
                 }
                 if (user != null)
                 {
-                    ClaimsIdentity identity = await userManager.CreateIdentityAsync(
-                                                            user,
-                                                            DefaultAuthenticationTypes.ExternalBearer);
-                    context.Validated(identity);
+                    try
+                    {
+                        DateTime subscriptionEndDate = DateTime.UtcNow;
+                        bool isUserSubscriptionActivated = SubscriptionManager.CheckUserSubscription(user.Id,out subscriptionEndDate);
+                        bool HasUserTakenAssesment = AssessmentManager.CheckUserAssessmentStatus(user.Id);
+
+                        ClaimsIdentity identity = await userManager.CreateIdentityAsync(
+                                                                user,
+                                                                DefaultAuthenticationTypes.ExternalBearer);
+                        //var properties = CreateProperties(user.Email,subscriptionEndDate, HasUserTakenAssesment, isUserSubscriptionActivated);
+
+                        //var ticket = new AuthenticationTicket(identity, properties);
+                        context.Validated(identity);
+
+                        Logger.Logger.Log("Login-GrantResourceOwnerCredentials()", "Login Successful for User : " + context.UserName);
+                    }
+                    catch(Exception ex)
+                    {
+                        Logger.Logger.Log("Login-GrantResourceOwnerCredentials()", "Error: Login for User Failed : " + context.UserName);
+                        Logger.Logger.Log("Login-GrantResourceOwnerCredentials()", "Error Message : " + ex.Message);
+
+                        context.SetError("server_error");
+                        context.Rejected();
+                        return;
+                    }
                 }
                 else
                 {
+                    Logger.Logger.Log("Login-GrantResourceOwnerCredentials()", "Error:Invalid Login for User : " + context.UserName);
                     context.SetError("invalid_grant", "Invalid UserId or password'");
                     context.Rejected();
                 }

@@ -7,9 +7,9 @@ namespace Kauffman.Api.SubscriptionAssessment
 {
     public class AssessmentManager
     {
-        static AssessmentDbContext db = new AssessmentDbContext();
+        static ApplicationDbContext db = new ApplicationDbContext();
 
-        public static bool NewUserAssessment()
+        public static bool CheckUserAssessmentStatus(string userId)
         {
             //Insert Code for new subscription
             return false;

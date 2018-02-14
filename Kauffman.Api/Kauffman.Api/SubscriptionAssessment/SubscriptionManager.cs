@@ -7,11 +7,12 @@ namespace Kauffman.Api.SubscriptionAssessment
 {
     public class SubscriptionManager
     {
-        static SubscriptionDContext db = new SubscriptionDContext();
+        static ApplicationDbContext db = new ApplicationDbContext();
 
 
-        public static bool NewUserSubscriptionStatus()
+        public static bool CheckUserSubscription(string userId, out DateTime subscriptionEndDate)
         {
+            subscriptionEndDate = DateTime.Now;
             //Insert Code for new subscription
             return false;
         }

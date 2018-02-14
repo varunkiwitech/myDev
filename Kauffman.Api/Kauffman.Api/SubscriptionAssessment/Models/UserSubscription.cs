@@ -38,10 +38,16 @@ namespace Kauffman.Api.SubscriptionAssessment.Models
         public string DiscountDescription { get; set; }
 
         public double Amount { get; set; }
+
+
     }
 
     public class SubscriptionType
     {
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+
 
     }
 }

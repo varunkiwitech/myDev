@@ -33,6 +33,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Kauffman.Api.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -127,25 +128,36 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\AddRequiredHeaderParameter.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="DbContext\OwinAuthDbContext .cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802140924567_14feb2018.cs" />
+    <Compile Include="Migrations\201802140924567_14feb2018.Designer.cs">
+      <DependentUpon>201802140924567_14feb2018.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802140938452_14feb2018-UserSubscriptionsTable.cs" />
+    <Compile Include="Migrations\201802140938452_14feb2018-UserSubscriptionsTable.Designer.cs">
+      <DependentUpon>201802140938452_14feb2018-UserSubscriptionsTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\ApiResponse\RegisterResponse.cs" />
+    <Compile Include="Models\ApiResponse\UserStatus.cs" />
+    <Compile Include="SubscriptionAssessment\ApplicationDbContext.cs" />
     <Compile Include="Models\RegisterViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="SubscriptionAssessment\AssessmentDbContext.cs" />
     <Compile Include="SubscriptionAssessment\AssessmentManager.cs" />
-    <Compile Include="SubscriptionAssessment\SubscriptionDbContext.cs" />
+    <Compile Include="SubscriptionAssessment\Models\UserSubscription.cs" />
     <Compile Include="SubscriptionAssessment\SubscriptionManager.cs" />
+    <Compile Include="SubscriptionAssessment\UserManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -155,6 +167,20 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201802140924567_14feb2018.resx">
+      <DependentUpon>201802140924567_14feb2018.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802140938452_14feb2018-UserSubscriptionsTable.resx">
+      <DependentUpon>201802140938452_14feb2018-UserSubscriptionsTable.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kauffman.Logger\Kauffman.Logger.csproj">
+      <Project>{892686e1-7641-498d-acd7-30a70b7e19f8}</Project>
+      <Name>Kauffman.Logger</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
