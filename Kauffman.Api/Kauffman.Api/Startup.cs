@@ -26,7 +26,8 @@ namespace Kauffman.Api
             ConfigureOAuth(app);
             HttpConfiguration config = new HttpConfiguration();
             WebApiConfig.Register(config);
-            //app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+            app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+            app.UseWebApi(config);
 
             //createRolesandUsers();
         }
@@ -81,7 +82,7 @@ namespace Kauffman.Api
             {
                 TokenEndpointPath = new PathString("/login"),
                 Provider = new AuthorizationServerProvider(),
-                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(30),
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(10000),
                 AllowInsecureHttp = true,
 
             });

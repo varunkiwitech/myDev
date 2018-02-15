@@ -6,6 +6,8 @@ namespace Kauffman.Api.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using SubscriptionAssessment.Models;
+    using Kauffman.Api.SubscriptionAssessment;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Kauffman.Api.SubscriptionAssessment.ApplicationDbContext>
     {
@@ -36,26 +38,43 @@ namespace Kauffman.Api.Migrations
 
             if (!context.Users.Any(u => u.UserName == "kauffman"))
             {
-                var store = new UserStore<IdentityUser>(context);
-                var manager = new UserManager<IdentityUser>(store);
-                var user = new IdentityUser { UserName = "kauffman@admin.com", Email = "kauffman@admin.com", PhoneNumberConfirmed = true, EmailConfirmed = true };
+                var store = new UserStore<ApplicationUser>(context);
+                var manager = new UserManager<ApplicationUser>(store);
+                var user = new ApplicationUser { UserName = "kauffman@admin.com", Email = "kauffman@admin.com", FullName = "Kauffman Admin", PhoneNumberConfirmed = true, EmailConfirmed = true };
 
                 manager.Create(user, "password@123");
                 manager.AddToRole(user.Id, "Admin");
             }
 
-            //  This method will be called after migrating to the latest version.
+            //AddSubscriptionTypesData(context);
+            AddSubscriptionPlans(context);
+        }
 
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
+        private void AddSubscriptionPlans(ApplicationDbContext context)
+        {
+            if (!context.SubscriptionTypes.Any())
+            {
+                context.SubscriptionTypes.AddOrUpdate(
+                    new SubscriptionType { Type = "Month", DurationMonths = 1 },
+                    new SubscriptionType { Type = "6 Months", DurationMonths = 6 },
+                    new SubscriptionType { Type = "1 Year", DurationMonths = 12 }
+                    );
+            }
+            context.Commit();
+        }
+
+        private void AddSubscriptionTypesData(Kauffman.Api.SubscriptionAssessment.ApplicationDbContext context)
+        {
+            if (!context.Subscription.Any())
+            {
+                context.Subscription.AddOrUpdate(
+                    new Subscription { SubscriptionName = "Subscription 1", Description = "This is Subscription 1", DiscountDescription = "" , Amount = 3.77 , DiscountDuration = 0},
+                    new Subscription { SubscriptionName = "Subscription 2", Description = "This is Subscription 2", DiscountDescription = "1 Month Free", Amount = 20.77, DiscountDuration = 1 },
+                    new Subscription { SubscriptionName = "Subscription 3", Description = "This is Subscription 3", DiscountDescription = "2 Months Free", Amount = 37.77, DiscountDuration = 2 }
+                    );
+            }
+
+            context.Commit();
         }
     }
 }

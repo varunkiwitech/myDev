@@ -11,22 +11,31 @@ using System.Threading.Tasks;
 using System.Web.Http.Description;
 using Kauffman.Api.Models.ApiResponse;
 using Kauffman.Api.SubscriptionAssessment;
+using Kauffman.Utility;
+using Kauffman.Api.SubscriptionAssessment.Models;
+
 
 namespace Kauffman.Api.Controllers
 {
     [Authorize]
     public class AccountController : ApiController
     {
-        [HttpGet]
-        [Route("api/TestMethod")]
-        public string TestMethod()
+        UserManager manager = new UserManager();
+
+        /// <summary>
+        /// Please use [/login] as the API   
+        /// </summary>
+        /// <remarks>
+        /// Please use [/login] as the API 
+        /// </remarks>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost, Route("user/login")]
+        [ResponseType(typeof(LoginResponse))]
+        public string Login([FromBody] SignInViewModel userSignInData)
         {
-           
-            string uId = GetUserId();
-            return "Hello, C# Corner Member. ";
+            return "Api Url changed to [/login]";
         }
-
-
 
         /// <summary>
         /// Signup 
@@ -37,46 +46,38 @@ namespace Kauffman.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost, Route("signup")]
-        [ResponseType(typeof(RegisterResponse))]
-        public async Task<HttpResponseMessage> Register([FromBody] RegisterViewModel model)
+        [ResponseType(typeof(UserInfo))]
+        public async Task<HttpResponseMessage> Register([FromBody] RegisterViewModel userSignUpData)
         {
             try
             {
-                Logger.Logger.Log("Register", "Start Register for User : " + model.UserEmail);
-
-                RegisterResponse regUserResponse = new RegisterResponse();
-                regUserResponse.IsUserSubscribed = false;
-                regUserResponse.HasUserTakenAssesment = false;
-
-                ApplicationDbContext context = new ApplicationDbContext();
-                var user = new ApplicationUser { UserName = model.UserEmail, Email = model.UserEmail };
-
-                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                if (string.IsNullOrEmpty(userSignUpData.FullName) || string.IsNullOrEmpty(userSignUpData.Password) || string.IsNullOrEmpty(userSignUpData.UserEmail))
                 {
-                    Logger.Logger.Log("Register", "Register for User Successful: " + model.UserEmail);
-                    regUserResponse.IsUserCreated = result.Succeeded;
-                    regUserResponse.UserId = user.Id;
-                    return Request.CreateResponse(HttpStatusCode.OK, regUserResponse);
+                    Logger.Logger.Log("API - Register()", Logger.Resources.LogMessages.InvalidSignUpInfo);
+                    return Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed, Resources.ApiResponse.InvalidSignUpInfo);
                 }
-                else
+
+                bool isEmailValid = Validator.IsEmailValid(userSignUpData.UserEmail);
+
+                if (!isEmailValid)
                 {
-                    Logger.Logger.Log("Register", "Register for User Failed: " + model.UserEmail);
-                    regUserResponse.IsUserCreated = result.Succeeded;
-                    regUserResponse.UserId = "";
-                    return Request.CreateResponse(HttpStatusCode.OK, regUserResponse);
+                    Logger.Logger.Log("API - Register()", Logger.Resources.LogMessages.IncorrectEmail);
+                    return Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed, Resources.ApiResponse.IncorrectEmail);
                 }
+
+                UserInfo regUserResponse = await manager.RegisterUser(userSignUpData.UserEmail, userSignUpData.Password, userSignUpData.FullName);
+
+                return Request.CreateResponse(HttpStatusCode.OK, regUserResponse);
             }
             catch (ApplicationException bex)
             {
-                Logger.Logger.Log("Register", "Error: Register for User Failed: " + bex.Message);
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, bex.Message);
+                Logger.Logger.Log("API - Register()", bex.Message);
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Resources.ApiResponse.RegistrationFailed);
             }
             catch (Exception ex)
             {
-                Logger.Logger.Log("Register", "Error: Register for User Failed: " + ex.Message);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error.");
+                Logger.Logger.Log("API - Register()", ex.Message);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Resources.ApiResponse.InternalServerError);
             }
         }
 
@@ -90,24 +91,16 @@ namespace Kauffman.Api.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("user/UserStatus")]
-        [ResponseType(typeof(UserStatus))]
+        [ResponseType(typeof(UserInfo))]
         public HttpResponseMessage GetUserStatus()
         {
             try
             {
-                string userId = GetUserId();
 
                 //To check if user exists or not
-                UserStatus userStatus = new UserStatus();
-                userStatus.UserId = userId;
-                userStatus.IsUserAcvite = true;
-                DateTime subscriptionEndDate = DateTime.UtcNow;
+              
 
-                userStatus.IsUserSubscribed = SubscriptionManager.CheckUserSubscription(userId, out subscriptionEndDate);
-                userStatus.SubscriptionEndDate = subscriptionEndDate;
-                userStatus.HasUserTakenAssesment = AssessmentManager.CheckUserAssessmentStatus(userId);
-
-                return Request.CreateResponse(HttpStatusCode.OK, userStatus);
+                return Request.CreateResponse(HttpStatusCode.OK, "");
             }
             catch (ApplicationException bex)
             {
@@ -119,30 +112,5 @@ namespace Kauffman.Api.Controllers
             }
         }
 
-        #region PrivateMethods
-
-        private static string GetUserId()
-        {
-            var identity = (System.Security.Claims.ClaimsPrincipal)System.Threading.Thread.CurrentPrincipal;
-            var principal = System.Threading.Thread.CurrentPrincipal as System.Security.Claims.ClaimsPrincipal;
-            var userId = identity.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
-            return userId;
-        }
-        private static string GetUserName()
-        {
-            var identity = (System.Security.Claims.ClaimsPrincipal)System.Threading.Thread.CurrentPrincipal;
-            var principal = System.Threading.Thread.CurrentPrincipal as System.Security.Claims.ClaimsPrincipal;
-            var name = identity.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Name).Select(c => c.Value).SingleOrDefault();
-            return name;
-        }
-        private static string GetUserMail()
-        {
-            var identity = (System.Security.Claims.ClaimsPrincipal)System.Threading.Thread.CurrentPrincipal;
-            var principal = System.Threading.Thread.CurrentPrincipal as System.Security.Claims.ClaimsPrincipal;
-            var mail = identity.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Email).Select(c => c.Value).SingleOrDefault();
-            return mail;
-        }
-
-        #endregion
     }
 }

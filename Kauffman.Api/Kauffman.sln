@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kauffman.Api.TestClient", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kauffman.Logger", "Kauffman.Logger\Kauffman.Logger.csproj", "{892686E1-7641-498D-ACD7-30A70B7E19F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kauffman.Utility", "Kauffman.Utility\Kauffman.Utility.csproj", "{B16D6DB6-7820-4D90-8878-37E4A32BD4F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{892686E1-7641-498D-ACD7-30A70B7E19F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{892686E1-7641-498D-ACD7-30A70B7E19F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{892686E1-7641-498D-ACD7-30A70B7E19F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B16D6DB6-7820-4D90-8878-37E4A32BD4F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B16D6DB6-7820-4D90-8878-37E4A32BD4F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B16D6DB6-7820-4D90-8878-37E4A32BD4F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B16D6DB6-7820-4D90-8878-37E4A32BD4F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

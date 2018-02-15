@@ -43,6 +43,30 @@ namespace Kauffman.Api.SubscriptionAssessment
 
         public System.Data.Entity.DbSet<UserSubscription> UserSubscriptions { get; set; }
 
+        public System.Data.Entity.DbSet<Subscription> Subscription { get; set; }
+
+        public System.Data.Entity.DbSet<SubscriptionType> SubscriptionTypes { get; set; }
+
+
+        public void Commit()
+        {
+            using (var transaction = Database.BeginTransaction())
+            {
+                var log = "";
+                try
+                {
+                    Database.Log = x => log = log + x;
+                    base.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(string.Format("Error occurred during running the script {0}", log), ex);
+                }
+            }
+        }
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
