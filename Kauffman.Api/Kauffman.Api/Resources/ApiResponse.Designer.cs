@@ -61,6 +61,15 @@ namespace Kauffman.Api.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to Fetch User Info.
+        /// </summary>
+        public static string FethcUserInfoFailed {
+            get {
+                return ResourceManager.GetString("FethcUserInfoFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please use correct email format.
         /// </summary>
         public static string IncorrectEmail {
@@ -102,15 +111,6 @@ namespace Kauffman.Api.Resources {
         public static string RegistrationFailed {
             get {
                 return ResourceManager.GetString("RegistrationFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User Registration Failed.
-        /// </summary>
-        public static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
     }

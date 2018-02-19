@@ -141,12 +141,13 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\SubscriptionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802150831375_SubscriptionData.cs" />
-    <Compile Include="Migrations\201802150831375_SubscriptionData.Designer.cs">
-      <DependentUpon>201802150831375_SubscriptionData.cs</DependentUpon>
+    <Compile Include="Migrations\201802191448454_Default.cs" />
+    <Compile Include="Migrations\201802191448454_Default.Designer.cs">
+      <DependentUpon>201802191448454_Default.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApiResponse\LoginResponse.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="SubscriptionAssessment\AssessmentManager.cs" />
+    <Compile Include="SubscriptionAssessment\Models\UserAssessment.cs" />
     <Compile Include="SubscriptionAssessment\Models\UserInfo.cs" />
     <Compile Include="SubscriptionAssessment\Models\UserSubscription.cs" />
     <Compile Include="SubscriptionAssessment\SubscriptionManager.cs" />
@@ -189,8 +191,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201802150831375_SubscriptionData.resx">
-      <DependentUpon>201802150831375_SubscriptionData.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201802191448454_Default.resx">
+      <DependentUpon>201802191448454_Default.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ApiResponse.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

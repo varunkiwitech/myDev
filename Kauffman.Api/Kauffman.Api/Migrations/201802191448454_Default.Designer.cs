@@ -7,13 +7,13 @@ namespace Kauffman.Api.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class SubscriptionData : IMigrationMetadata
+    public sealed partial class Default : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(SubscriptionData));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Default));
         
         string IMigrationMetadata.Id
         {
-            get { return "201802150831375_SubscriptionData"; }
+            get { return "201802191448454_Default"; }
         }
         
         string IMigrationMetadata.Source

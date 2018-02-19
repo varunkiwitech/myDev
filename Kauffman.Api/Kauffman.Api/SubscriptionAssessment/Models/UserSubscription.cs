@@ -21,10 +21,9 @@ namespace Kauffman.Api.SubscriptionAssessment.Models
 
         public DateTime SubscriptionUpdateDate { get; set; }
 
-        public ApplicationUser User { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
-        public Subscription UserCurrentSubscription { get; set; }
-
+        public virtual Subscription UserCurrentSubscription { get; set; }
 
     }
 
@@ -44,7 +43,7 @@ namespace Kauffman.Api.SubscriptionAssessment.Models
 
         public double Amount { get; set; }
 
-        public SubscriptionType SubscriptionType { get; set; }
+        public virtual SubscriptionType SubscriptionType { get; set; }
     }
 
     public class SubscriptionType

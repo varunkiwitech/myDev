@@ -46,15 +46,20 @@ namespace Kauffman.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost, Route("signup")]
-        [ResponseType(typeof(UserInfo))]
+        [ResponseType(typeof(UserStatusResponse))]
         public async Task<HttpResponseMessage> Register([FromBody] RegisterViewModel userSignUpData)
         {
+            UserStatusResponse res = new UserStatusResponse();
+            res.Meta = new ApiMetadata();
+            res.UserInfo = null;
             try
             {
                 if (string.IsNullOrEmpty(userSignUpData.FullName) || string.IsNullOrEmpty(userSignUpData.Password) || string.IsNullOrEmpty(userSignUpData.UserEmail))
                 {
                     Logger.Logger.Log("API - Register()", Logger.Resources.LogMessages.InvalidSignUpInfo);
-                    return Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed, Resources.ApiResponse.InvalidSignUpInfo);
+                    res.Meta.StatusCode = Convert.ToInt32(HttpStatusCode.PreconditionFailed);
+                    res.Meta.StatusMessage = Resources.ApiResponse.InvalidSignUpInfo;
+                    return Request.CreateResponse(HttpStatusCode.PreconditionFailed, res);
                 }
 
                 bool isEmailValid = Validator.IsEmailValid(userSignUpData.UserEmail);
@@ -62,22 +67,33 @@ namespace Kauffman.Api.Controllers
                 if (!isEmailValid)
                 {
                     Logger.Logger.Log("API - Register()", Logger.Resources.LogMessages.IncorrectEmail);
-                    return Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed, Resources.ApiResponse.IncorrectEmail);
+                    res.Meta.StatusCode = Convert.ToInt32(HttpStatusCode.PreconditionFailed);
+                    res.Meta.StatusMessage = Resources.ApiResponse.IncorrectEmail;
+                    return Request.CreateResponse(HttpStatusCode.PreconditionFailed, res);
                 }
 
                 UserInfo regUserResponse = await manager.RegisterUser(userSignUpData.UserEmail, userSignUpData.Password, userSignUpData.FullName);
 
-                return Request.CreateResponse(HttpStatusCode.OK, regUserResponse);
+                if (regUserResponse != null)
+                    res.UserInfo = regUserResponse;
+
+                res.Meta.StatusMessage = "Sucess";
+
+                return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (ApplicationException bex)
             {
                 Logger.Logger.Log("API - Register()", bex.Message);
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Resources.ApiResponse.RegistrationFailed);
+                res.Meta.StatusCode = Convert.ToInt32(HttpStatusCode.BadRequest);
+                res.Meta.StatusMessage = "Bad Request";
+                return Request.CreateResponse(HttpStatusCode.BadRequest, res);
             }
             catch (Exception ex)
             {
                 Logger.Logger.Log("API - Register()", ex.Message);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, Resources.ApiResponse.InternalServerError);
+                res.Meta.StatusCode = Convert.ToInt32(HttpStatusCode.InternalServerError);
+                res.Meta.StatusMessage = Resources.ApiResponse.InternalServerError;
+                return Request.CreateResponse(HttpStatusCode.BadRequest, res);
             }
         }
 
@@ -90,27 +106,42 @@ namespace Kauffman.Api.Controllers
         /// </remarks>
         /// <returns></returns>
         [HttpGet]
-        [Route("user/UserStatus")]
-        [ResponseType(typeof(UserInfo))]
-        public HttpResponseMessage GetUserStatus()
+        [Route("user/userstatus")]
+        [ResponseType(typeof(UserStatusResponse))]
+        public HttpResponseMessage GetUserInfo()
         {
+            UserStatusResponse res = new UserStatusResponse();
+            res.Meta = new ApiMetadata();
+            res.UserInfo = null;
+
             try
             {
+                UserInfo userInfo = manager.GetUserStatus();
 
-                //To check if user exists or not
-              
+                if (userInfo != null)
+                    res.UserInfo = userInfo;
 
-                return Request.CreateResponse(HttpStatusCode.OK, "");
+                res.Meta.StatusMessage = "Sucess";
+
+                return Request.CreateResponse(HttpStatusCode.OK, res);
             }
             catch (ApplicationException bex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, bex.Message);
+                Logger.Logger.Log("API - GetUserInfo()", bex.Message);
+                res.Meta.StatusCode = Convert.ToInt32(HttpStatusCode.BadRequest);
+                res.Meta.StatusMessage = Resources.ApiResponse.FethcUserInfoFailed;
+                return Request.CreateResponse(HttpStatusCode.BadRequest, res);
             }
             catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error.");
+                Logger.Logger.Log("API - GetUserInfo()", ex.Message);
+                res.Meta.StatusCode = Convert.ToInt32(HttpStatusCode.InternalServerError);
+                res.Meta.StatusMessage = Resources.ApiResponse.InternalServerError;
+                return Request.CreateResponse(HttpStatusCode.BadRequest, res);
             }
         }
+
+     
 
     }
 }

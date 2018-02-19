@@ -61,13 +61,23 @@ namespace Kauffman.Api.SubscriptionAssessment
             UserInfo userStatus = new UserInfo();
             try
             {
+                Logger.Logger.Log("UserManager-GetUserStatus()", Logger.Resources.LogMessages.MethodStart);
+
                 string userId = GetUserId();
+                string emailId = GetUserMail();
+
+                Logger.Logger.Log("UserManager-GetUserStatus()", Logger.Resources.LogMessages.LoggednInUser + emailId);
+
                 userStatus.UserId = userId;
                 userStatus.IsUserActive = true;
                 DateTime subscriptionEndDate = DateTime.UtcNow;
 
                 userStatus.IsUserSubscribed = SubscriptionManager.CheckUserSubscription(userId, out subscriptionEndDate);
                 userStatus.SubscriptionEndDate = subscriptionEndDate;
+
+                if (!userStatus.IsUserSubscribed)
+                    userStatus.SubscriptionEndDate = null;
+
                 userStatus.HasUserTakenAssesment = AssessmentManager.CheckUserAssessmentStatus(userId);
 
                 if (!userStatus.IsUserSubscribed)
@@ -79,8 +89,9 @@ namespace Kauffman.Api.SubscriptionAssessment
                 if (!userStatus.IsUserActive)
                     userStatus.Message = "Inactive User";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Logger.Log("UserManager-GetUserStatus()", Logger.Resources.LogMessages.MethodException + ex.Message);
                 throw;
             }
             return userStatus;

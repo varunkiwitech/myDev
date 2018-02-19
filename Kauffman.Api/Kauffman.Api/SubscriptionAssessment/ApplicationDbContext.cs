@@ -32,12 +32,21 @@ namespace Kauffman.Api.SubscriptionAssessment
 
         protected override void OnModelCreating(System.Data.Entity.DbModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); modelBuilder.Entity<IdentityUser>().ToTable("Users").Property(p => p.Id).HasColumnName("UserId");
+            base.OnModelCreating(modelBuilder);
+            //modelBuilder.Entity<IdentityUser>().ToTable("Users").Property(p => p.Id).HasColumnName("UserId");
             modelBuilder.Entity<ApplicationUser>().ToTable("Users").Property(p => p.Id).HasColumnName("UserId");
             modelBuilder.Entity<IdentityUserRole>().ToTable("UserRoles");
             modelBuilder.Entity<IdentityUserLogin>().ToTable("UserLogins");
             modelBuilder.Entity<IdentityUserClaim>().ToTable("UserClaims");
             modelBuilder.Entity<IdentityRole>().ToTable("Roles");
+
+
+            //modelBuilder.Entity<UserSubscription>().ToTable("UserSubscriptions");
+            //modelBuilder.Entity<Subscription>().ToTable("Subscription");
+            //modelBuilder.Entity<SubscriptionType>().ToTable("SubscriptionTypes");
+            //modelBuilder.Entity<IdentityRole>().ToTable("Roles");
+            //modelBuilder.Entity<IdentityRole>().ToTable("Roles");
+
         }
 
 
@@ -47,25 +56,14 @@ namespace Kauffman.Api.SubscriptionAssessment
 
         public System.Data.Entity.DbSet<SubscriptionType> SubscriptionTypes { get; set; }
 
+        public System.Data.Entity.DbSet<UserAssessmentStatus> UserAssessmentStatus { get; set; }
 
-        public void Commit()
-        {
-            using (var transaction = Database.BeginTransaction())
-            {
-                var log = "";
-                try
-                {
-                    Database.Log = x => log = log + x;
-                    base.SaveChanges();
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw new Exception(string.Format("Error occurred during running the script {0}", log), ex);
-                }
-            }
-        }
+        public System.Data.Entity.DbSet<UserAssessmentAnswer> UserAssessmentAnswers { get; set; }
+
+        public System.Data.Entity.DbSet<AssessmentQuestion> AssessmentQuestions { get; set; }
+
+        public System.Data.Entity.DbSet<QuestionType> QuestionTypes { get; set; }
+
 
         public static ApplicationDbContext Create()
         {

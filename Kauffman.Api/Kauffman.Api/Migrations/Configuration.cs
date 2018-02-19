@@ -46,11 +46,24 @@ namespace Kauffman.Api.Migrations
                 manager.AddToRole(user.Id, "Admin");
             }
 
-            //AddSubscriptionTypesData(context);
-            AddSubscriptionPlans(context);
+            AddSubscriptionTypesData(context);
+            AddAssessmentQuestionTypes(context);
+            //AddSubscriptionPlans(context);
         }
 
-        private void AddSubscriptionPlans(ApplicationDbContext context)
+        private void AddAssessmentQuestionTypes(ApplicationDbContext context)
+        {
+            if (!context.QuestionTypes.Any())
+            {
+                context.QuestionTypes.AddOrUpdate(
+                    new QuestionType { Type = "Numeric", MinValue = 0 , MaxValue = 10 },
+                    new QuestionType { Type = "Text", MinValue = 1 , MaxValue = 0}
+                    );
+            }
+            context.SaveChanges();
+        }
+
+        private void AddSubscriptionTypesData(ApplicationDbContext context)
         {
             if (!context.SubscriptionTypes.Any())
             {
@@ -60,10 +73,11 @@ namespace Kauffman.Api.Migrations
                     new SubscriptionType { Type = "1 Year", DurationMonths = 12 }
                     );
             }
-            context.Commit();
+            context.SaveChanges();
+            //context.Commit();
         }
 
-        private void AddSubscriptionTypesData(Kauffman.Api.SubscriptionAssessment.ApplicationDbContext context)
+        private void AddSubscriptionPlans(Kauffman.Api.SubscriptionAssessment.ApplicationDbContext context)
         {
             if (!context.Subscription.Any())
             {
@@ -74,7 +88,7 @@ namespace Kauffman.Api.Migrations
                     );
             }
 
-            context.Commit();
+            context.SaveChanges();
         }
     }
 }

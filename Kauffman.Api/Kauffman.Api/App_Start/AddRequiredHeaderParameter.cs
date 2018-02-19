@@ -14,7 +14,7 @@ namespace Kauffman.Api.App_Start
             if (operation.parameters == null)
                 operation.parameters = new List<Parameter>();
 
-            if (apiDescription.RelativePath != "signup" && apiDescription.RelativePath != "user/login")
+            if (apiDescription.RelativePath != "signup" && apiDescription.RelativePath != "user/login" && apiDescription.RelativePath != "subscriptions")
             {
                 operation.parameters.Add(new Parameter
                 {

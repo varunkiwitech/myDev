@@ -79,6 +79,33 @@ namespace Kauffman.Logger.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logged in user is.
+        /// </summary>
+        public static string LoggednInUser {
+            get {
+                return ResourceManager.GetString("LoggednInUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some Error Occured.
+        /// </summary>
+        public static string MethodException {
+            get {
+                return ResourceManager.GetString("MethodException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method Start.
+        /// </summary>
+        public static string MethodStart {
+            get {
+                return ResourceManager.GetString("MethodStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User Registration Successful.
         /// </summary>
         public static string RegisterationSuccess {

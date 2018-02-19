@@ -132,4 +132,13 @@
   <data name="RegistrationFailed" xml:space="preserve">
     <value>User Registration Failed</value>
   </data>
+  <data name="LoggednInUser" xml:space="preserve">
+    <value>Logged in user is</value>
+  </data>
+  <data name="MethodException" xml:space="preserve">
+    <value>Some Error Occured</value>
+  </data>
+  <data name="MethodStart" xml:space="preserve">
+    <value>Method Start</value>
+  </data>
 </root>
